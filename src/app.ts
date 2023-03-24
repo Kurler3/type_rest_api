@@ -26,6 +26,7 @@ import express from 'express';
 
 import connect from "./utils/connect";
 import logger from "./utils/logger";
+import routes from "./routes";
 
 // INIT APP
 const app = express();
@@ -37,4 +38,7 @@ app.listen(port, async () => {
 
     // CONNECT TO DB
     await connect();
+
+    // CONNECT ROUTES
+    routes(app)
 })
