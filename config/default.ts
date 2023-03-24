@@ -3,5 +3,6 @@ dotenv.config();
 
 export default {
     port: "1337",
-    dbUri: process.env.MONGO_DB_URI
+    dbUri: process.env.MONGO_DB_URI,
+    saltWorkFactor: 10,
 }
