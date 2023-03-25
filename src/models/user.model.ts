@@ -4,16 +4,19 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 import config from 'config';
+import logger from "../utils/logger";
+import { HydratedDocument } from 'mongoose';
 
-export interface UserDocument extends mongoose.Document{
+export interface IUser {
     email: string,
     name: string,
     password: string,
     createdAt: Date,
     updatedAt: Date,
-};
+    comparePassword: (candidatePassword: string) => Promise<boolean>
+}
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
     // EMAIL => TYPE STRING, REQUIRED AND UNIQUE
     email: {
         type: String,
@@ -38,7 +41,7 @@ userSchema.pre("save", async function(
     next: any
 ) {
     // INIT USER AS USER DOCUMENT
-    let user = this as UserDocument;
+    let user = this as HydratedDocument<IUser>;
 
     // IF NOT MODIFYING THE PASSWORD => SKIP
     if(!user.isModified('password')) {
@@ -56,7 +59,18 @@ userSchema.pre("save", async function(
 
     // NEXT
     return next();
-})
+});
+
+// ADD A METHOD TO COMPARE PASSWORD
+userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+
+    const user = this as HydratedDocument<IUser>;
+
+    return await bcrypt.compare(candidatePassword, user.password).catch((e) => {
+        logger.error(e);
+        return false;
+    });
+}
 
 const UserModel = mongoose.model("User", userSchema);
 

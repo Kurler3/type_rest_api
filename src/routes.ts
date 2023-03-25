@@ -4,6 +4,12 @@ import {
   Response
 } from "express";
 
+////////////////////////////////////
+// ROUTERS /////////////////////////
+////////////////////////////////////
+
+import userRouter from "./router/user.router";
+
 function routes(app: Express) {
     
   // HEALTH CHECK
@@ -14,7 +20,16 @@ function routes(app: Express) {
 
     res.sendStatus(200)
 
-  })
+  });
+
+  
+
+  ///////////////////////////////////////
+  // USERS //////////////////////////////
+  ///////////////////////////////////////
+
+  app.use("/api/users", userRouter);
+
 
 }
 
