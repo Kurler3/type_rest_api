@@ -8,6 +8,7 @@ import {
 import {
     AnyZodObject
 } from 'zod';
+import logger from '../utils/logger';
 
 const validate = (
     schema: AnyZodObject

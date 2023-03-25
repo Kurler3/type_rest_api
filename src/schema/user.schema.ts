@@ -1,6 +1,7 @@
 import {
     TypeOf,
-    object, string,
+    object, 
+    string,
 } from "zod";
 
 export const createUserSchema = object({

@@ -31,6 +31,7 @@ import routes from "./routes";
 // INIT APP
 const app = express();
 
+app.use(express.json())
 
 app.listen(port, async () => {
 

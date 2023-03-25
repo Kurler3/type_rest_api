@@ -1,6 +1,3 @@
-import {
-    HydratedDocument  
-} from "mongoose";
 import UserModel, { IUser } from "../models/user.model";
 import logger from "../utils/logger";
 
@@ -11,6 +8,32 @@ export async function createUser(
     try {
         
         return await UserModel.create(input);
+
+    } catch (error) {
+        logger.error(error);
+
+        throw new Error(error as string);
+    }
+}
+
+export async function validateUserPassword(
+    email: string,
+    password: string,
+) {
+    try {
+
+        const user = await UserModel.findOne({email: email});
+
+        // IF DIDN'T FIND USER WITH THAT EMAIL => ERROR
+        if(!user) {
+            throw new Error(`User with email "${email}" doesn't exist!`);
+        }
+
+        // COMPARE PASSWORD
+        const isPasswordCorrect = await user.comparePassword(password);
+
+        // RETURN WHETHER THE PASSWORD IS CORRECT OR NOT
+        return isPasswordCorrect;
 
     } catch (error) {
         logger.error(error);

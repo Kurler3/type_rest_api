@@ -5,6 +5,9 @@ import {
 import logger from "../utils/logger";
 import { createUser } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
+import {
+    omit
+} from 'lodash';
 
 export async function createUserHandler(
     req: Request<{}, {}, CreateUserInput["body"]>,
@@ -15,14 +18,19 @@ export async function createUserHandler(
         // CREATE USER USING SERVICE
         const user = await createUser(req.body);
 
+        // OMIT PASSWORD
+        
+
         return res.status(201).json({
             message: "User created successfuly!",
-            data: user,
+            data: omit(user.toJSON(), "password"),
         })
 
     } catch (error: any) {
         logger.error(error);
 
-        return res.status(400).send(error.message);
+        return res.status(400).json({
+            message: error.message,
+        });
     }
 }
