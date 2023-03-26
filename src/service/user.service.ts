@@ -1,3 +1,4 @@
+import { omit } from "lodash";
 import UserModel, { IUser } from "../models/user.model";
 import logger from "../utils/logger";
 
@@ -7,7 +8,10 @@ export async function createUser(
 ) {
     try {
         
-        return await UserModel.create(input);
+        const newUser = await UserModel.create(input);
+
+        // OMIT THE PASSWORD FROM THE USER
+        return omit(newUser.toJSON(), "password");
 
     } catch (error) {
         logger.error(error);
@@ -16,10 +20,10 @@ export async function createUser(
     }
 }
 
-export async function validateUserPassword(
-    email: string,
-    password: string,
-) {
+export async function validateUserPassword({
+    email,
+    password,
+}: {email: string; password: string}) {
     try {
 
         const user = await UserModel.findOne({email: email});
@@ -32,8 +36,12 @@ export async function validateUserPassword(
         // COMPARE PASSWORD
         const isPasswordCorrect = await user.comparePassword(password);
 
-        // RETURN WHETHER THE PASSWORD IS CORRECT OR NOT
-        return isPasswordCorrect;
+        // IF NOT CORRECT => THROW ERROR
+        if(!isPasswordCorrect) {
+            throw new Error('Incorrect credentials');
+        }
+
+        return omit(user.toJSON(), "password");
 
     } catch (error) {
         logger.error(error);

@@ -13,17 +13,15 @@ export async function createSessionHandler(
     try {
         
         // VALIDATE THE USERS PASSWORD
-        const isPasswordCorrect = await validateUserPassword(
-
+        const user = await validateUserPassword(
+            req.body,
         );
 
-        if(!isPasswordCorrect) {
-            return res.status(403).json({
-                message: "Incorrect password!"
-            })
-        }
-
         // CREATE A SESSION
+        const session = await createSession(
+            user._id as unknown as string,
+            req.get("user-agend") || "",
+        );
 
         // CREATE AN ACCESS TOKEN
 
