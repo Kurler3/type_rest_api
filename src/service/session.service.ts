@@ -1,4 +1,5 @@
-import SessionModel from "../models/session.model";
+import { FilterQuery } from "mongoose";
+import SessionModel, { ISession } from "../models/session.model";
 import logger from "../utils/logger";
 
 export async function createSession(
@@ -21,4 +22,19 @@ export async function createSession(
         throw new Error(error as string);
     }
 
+}
+
+export async function findSessions(
+    query: FilterQuery<ISession>
+) {
+    try {
+        
+        // RETURNS ONLY THE OBJECT DATA, NOT THE FUNCTIONS / IRRELEVANT FIELDS
+        return await SessionModel.find(query).lean();
+        
+    } catch (error: any) {
+        logger.error(error);
+
+        throw new Error(error.message);
+    }
 }

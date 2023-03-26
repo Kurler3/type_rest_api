@@ -12,7 +12,7 @@ const userRouter = Router();
 // CREATE USER //////////////////
 /////////////////////////////////
 
-userRouter.post("/createUser", validate(createUserSchema), createUserHandler);
+userRouter.post("/create", validate(createUserSchema), createUserHandler);
 
 /////////////////////////////////
 // EXPORT ROUTER ////////////////

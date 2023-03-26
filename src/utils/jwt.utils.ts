@@ -7,7 +7,7 @@ dotenv.config();
 
 
 const publicKey = config.get<string>("publicKey");
-const privateKey = process.env.PRIVATE_KEY
+const privateKey = JSON.parse(process.env.PRIVATE_KEY!).privateKey
 
 export const signJwt = (
     object: Object, options?: jwt.SignOptions | undefined
@@ -22,9 +22,27 @@ export const signJwt = (
 
 
 export const verifyJwt = (token: string) => {
+    
     try {
-        
-    } catch (error) {
-        logger.error()
+
+        const decoded = jwt.verify(
+            token,
+            publicKey,
+        );
+
+        return {
+            valid: true,
+            expired: false,
+            decoded,
+        }
+
+    } catch (error: any) {
+        logger.error("Error while verifying jwt: ", error);
+
+        return {
+            valid: false,
+            expired: error.message === "jwt expired",
+            decoded: null,
+        }
     }
 }
