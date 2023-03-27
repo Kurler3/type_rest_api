@@ -3,7 +3,7 @@ import {
 } from "express";
 import { createUserHandler } from "../controller/user.controller";
 
-import validate from "../middleware/validateResource";
+import validate from "../middleware/validateResource.middleware";
 import { createUserSchema } from '../schema/user.schema';
 
 const userRouter = Router();

@@ -5,7 +5,7 @@ import {
 import {
     createSessionHandler
 } from "../controller/session.controller";
-import validate from "../middleware/validateResource";
+import validate from "../middleware/validateResource.middleware";
 import { createSessionSchema } from '../schema/session.schema';
 
 
