@@ -3,7 +3,7 @@ import {
     Response,
 } from "express";
 import logger from "../utils/logger";
-import { createSession } from "../service/session.service";
+import { createSession, findSessions } from "../service/session.service";
 import { validateUserPassword } from "../service/user.service";
 import { signJwt } from "../utils/jwt.utils";
 import config from "config";
@@ -73,16 +73,33 @@ export async function getUserSessionsHandler(
         // GET USER /////
         /////////////////
 
-        
+        const user = res.locals.user;
 
         ///////////////////////
         // GET USER SESSIONS //
         ///////////////////////
 
-        // RETURN
-        
+        // GET ONLY VALID SESSIONS FOR THAT USER
+        const userSessions = await findSessions(
+            {
+                user: user._id,
+                valid: true
+            }
+        );
+            
+        //////////////////////
+        // RETURN ////////////
+        //////////////////////
 
-    } catch (error) {
-        
+        return res.status(200).json(userSessions);
+
+    } catch (error: any) {
+
+        logger.error(error);
+
+        return res.status(400).json({
+            message: error.message,
+        });
+
     }
 }
