@@ -31,23 +31,43 @@ export default function deserializeUser(
             decoded,
         } = verifyJwt(accessToken);
 
+        // IF EXPIRED => ERROR BACK TO CLIENT AS TOKEN EXPIRED
         if(expired) {
-          return res.status(400).json({
-            message: "token expired"
-          })
+
+          // TRY TO FIND A REFRESH TOKEN
+          const refreshToken = (get(req, "headers.x-refresh-token", "") as string).replace(/^Bearer\s/, "");
+
+          if(refreshToken) {
+
+            // VERIFY
+            const {
+                expired,
+                decoded  
+            } = verifyJwt(refreshToken);
+
+            // IF IS EXPIRED 
+            if(expired) {
+                return res.status(400).json({
+                    message: "Access token and refresh token expired!"
+                })
+            }
+
+            // IF VALID => RE-ISSUE A ACCESS TOKEN
+            if(decoded) {
+
+            }
+
+          } else {
+            return res.status(400).json({
+                message: "token expired"
+            })
+          }
+          
         }
 
         // IF VALID 
         if(decoded) {
-
             res.locals.user = decoded;
-
-            return next();
-
-        } else {
-            return res.status(400).json({
-                message: "Invalid token",
-            });
         }
 
         return next();

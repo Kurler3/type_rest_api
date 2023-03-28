@@ -24,7 +24,7 @@ export const signJwt = (
 export const verifyJwt = (token: string) => {
     
     try {
-
+        
         const decoded = jwt.verify(
             token,
             publicKey,
@@ -37,7 +37,7 @@ export const verifyJwt = (token: string) => {
         }
 
     } catch (error: any) {
-        logger.error("Error while verifying jwt: ", error);
+        console.log("Error while verifying jwt: ", error);
 
         return {
             valid: false,

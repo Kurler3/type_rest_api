@@ -3,10 +3,11 @@ import {
 } from "express";
 
 import {
-    createSessionHandler
+    createSessionHandler, getUserSessionsHandler
 } from "../controller/session.controller";
 import validate from "../middleware/validateResource.middleware";
 import { createSessionSchema } from '../schema/session.schema';
+import requireUserMiddleware from "../middleware/requireUser.middleware";
 
 
 const sessionRouter = Router();
@@ -21,7 +22,13 @@ sessionRouter.post("/create", validate(createSessionSchema), createSessionHandle
 // GET SESSIONS ///////
 ///////////////////////
 
+sessionRouter.get("/list", requireUserMiddleware, getUserSessionsHandler);
 
+///////////////////////
+// DELETE SESSION /////
+///////////////////////
+
+sessionRouter.delete("/delete", requireUserMiddleware, getUserSessionsHandler);
 
 ///////////////////////
 // EXPORT /////////////

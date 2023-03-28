@@ -1,6 +1,7 @@
 import { omit } from "lodash";
 import UserModel, { IUser } from "../models/user.model";
 import logger from "../utils/logger";
+import { FilterQuery } from 'mongoose';
 
 
 export async function createUser(
@@ -48,4 +49,10 @@ export async function validateUserPassword({
 
         throw new Error(error as string);
     }
+}
+
+export async function findUser(
+    query: FilterQuery<IUser>
+) {
+    return await UserModel.findOne(query).lean();
 }

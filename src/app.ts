@@ -27,11 +27,14 @@ import express from 'express';
 import connect from "./utils/connect";
 import logger from "./utils/logger";
 import routes from "./routes";
+import deserializeUser from './middleware/deserializeUser.middleware';
 
 // INIT APP
 const app = express();
 
 app.use(express.json())
+
+app.use(deserializeUser);
 
 app.listen(port, async () => {
 
