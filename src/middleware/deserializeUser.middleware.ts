@@ -8,8 +8,9 @@ import {
     get
 } from "lodash";
 import { verifyJwt } from "../utils/jwt.utils";
+import { reIssueAccessToken } from "../service/session.service";
 
-export default function deserializeUser(
+export default async function deserializeUser(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -39,23 +40,19 @@ export default function deserializeUser(
 
           if(refreshToken) {
 
-            // VERIFY
+            const newAccessToken = await reIssueAccessToken({refreshToken});
+
+            if(newAccessToken) {
+                res.setHeader("x-access-token", newAccessToken);
+            }
+
             const {
-                expired,
-                decoded  
-            } = verifyJwt(refreshToken);
+                decoded
+            } = verifyJwt(newAccessToken as string);
 
-            // IF IS EXPIRED 
-            if(expired) {
-                return res.status(400).json({
-                    message: "Access token and refresh token expired!"
-                })
-            }
+            res.locals.user = decoded;
 
-            // IF VALID => RE-ISSUE A ACCESS TOKEN
-            if(decoded) {
-
-            }
+            next();
 
           } else {
             return res.status(400).json({

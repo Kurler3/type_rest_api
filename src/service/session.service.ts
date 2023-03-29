@@ -1,9 +1,10 @@
 import { FilterQuery, UpdateQuery } from "mongoose";
 import SessionModel, { ISession } from "../models/session.model";
 import logger from "../utils/logger";
-import { verifyJwt } from '../utils/jwt.utils';
+import { signJwt, verifyJwt } from '../utils/jwt.utils';
 import { get } from "lodash";
 import { findUser } from "./user.service";
+import config from "config";
 
 export async function createSession(
     userId: string,
@@ -59,24 +60,37 @@ export async function reIssueAccessToken(
     }
 ) {
 
+    // DECODE REFRESH TOKEN
     const {
         decoded
     } = verifyJwt(refreshToken);
 
+    // CHECK IF REFRESH TOKEN IS VALID
     if(!decoded || get(decoded, "_id", null) === null) {
        throw new Error("Refresh token not valid!")
     }
 
+    // GET SESSION
     const session = await SessionModel.findById(get(decoded, "session"));
 
-    if(!session || !get(session, "valid")) {
-
-        return false;
-
-    }
- 
+    // IF NO SESSION => RETURN FALSE
+    if(!session || !get(session, "valid")) return false;
+    
+    
+    // FIND USER FOR THAT SESSION
     const user = await findUser({_id: session.user});
 
-    
+    // IF NOT FOUND => RETURN FALSE
+    if(!user) return false;
 
+
+    // CREATE NEW ACCESS TOKEN
+    const newAccessToken = signJwt(
+        {...user, session: session._id},
+        {expiresIn: config.get<string>("accessTokenTtl")}
+    );
+
+  
+    return newAccessToken;
+    
 }
