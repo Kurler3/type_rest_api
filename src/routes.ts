@@ -10,6 +10,7 @@ import {
 
 import userRouter from "./router/user.router";
 import sessionRouter from "./router/session.router";
+import productRouter from "./router/product.router";
 
 function routes(app: Express) {
     
@@ -34,6 +35,12 @@ function routes(app: Express) {
   ///////////////////////////////////////
 
   app.use("/api/sessions", sessionRouter);
+
+  ///////////////////////////////////////
+  // PRODUCTS ///////////////////////////
+  ///////////////////////////////////////
+
+  app.use("/api/products", productRouter);
 
 }
 
